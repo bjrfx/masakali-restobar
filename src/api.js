@@ -77,6 +77,10 @@ export const api = {
   updateContactInquiry: (id, data) => apiCall(`/contact/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteContactInquiry: (id) => apiCall(`/contact/${id}`, { method: 'DELETE' }),
 
+  // Reservation Settings
+  getReservationSettings: () => apiCall('/reservation-settings', { auth: false }),
+  updateReservationSettings: (data) => apiCall('/admin/reservation-settings', { method: 'PUT', body: JSON.stringify(data) }),
+
   // Analytics
   getAnalytics: () => apiCall('/analytics/overview'),
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { CalendarDays, Clock, Users, MapPin, Check, Loader2, ArrowRight, Phone, Mail, MessageSquare } from 'lucide-react';
+import { CalendarDays, Clock, Users, MapPin, Check, Loader2, ArrowRight, Phone, Mail, MessageSquare, PauseCircle } from 'lucide-react';
 import api from '../api';
 import { gtagEvent, trackGoogleAdsConversion } from '../utils/gtag';
 
@@ -36,6 +36,8 @@ export default function Reservations() {
   const [submitted, setSubmitted] = useState(false);
   const [confirmation, setConfirmation] = useState(null);
   const [error, setError] = useState('');
+  const [reservationsPaused, setReservationsPaused] = useState(false);
+  const [pauseLoading, setPauseLoading] = useState(true);
 
   useEffect(() => {
     api.getRestaurants()
@@ -48,6 +50,12 @@ export default function Reservations() {
         setRestaurants(restobarOnly);
       })
       .catch(console.error);
+    api.getReservationSettings()
+      .then((data) => {
+        setReservationsPaused(Boolean(data?.reservations_paused));
+      })
+      .catch(console.error)
+      .finally(() => setPauseLoading(false));
   }, []);
 
   useEffect(() => {
@@ -156,6 +164,35 @@ export default function Reservations() {
         <div className="indian-vine-left" />
         <div className="indian-vine-right" />
         <div className="max-w-4xl mx-auto px-4">
+          {pauseLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 size={32} className="animate-spin text-amber-500" />
+            </div>
+          ) : reservationsPaused ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-neutral-900 border border-red-500/20 rounded-2xl p-10 text-center shadow-sm dark:shadow-none"
+            >
+              <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <PauseCircle size={40} className="text-red-500 dark:text-red-400" />
+              </div>
+              <h2 className="font-display text-3xl font-bold text-neutral-900 dark:text-white mb-4">
+                Reservations Paused for Today
+              </h2>
+              <p className="text-neutral-600 dark:text-neutral-400 text-lg mb-6 max-w-lg mx-auto">
+                We're sorry, but online reservations are currently paused. Please try again later or contact us directly to reserve your table.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="tel:+16137896777" className="btn-gold inline-flex items-center gap-2">
+                  <Phone size={18} /> Call Us
+                </a>
+                <a href="mailto:infomasakaliottawa@gmail.com" className="btn-outline-gold inline-flex items-center gap-2">
+                  <Mail size={18} /> Email Us
+                </a>
+              </div>
+            </motion.div>
+          ) : (
           <AnimatePresence mode="wait">
             {submitted ? (
               <motion.div
@@ -288,6 +325,7 @@ export default function Reservations() {
               </motion.div>
             )}
           </AnimatePresence>
+          )}
 
           {/* Info cards */}
           <div className="grid sm:grid-cols-3 gap-6 mt-12">
