@@ -20,6 +20,7 @@ import AdminCateringManagement from './pages/admin/CateringManagement';
 import AdminContactManagement from './pages/admin/ContactManagement';
 import AdminHomepageContentManagement from './pages/admin/HomepageContentManagement';
 import AdminNotificationEmailSettings from './pages/admin/NotificationEmailSettings';
+import AdminReservationSettings from './pages/admin/ReservationSettings';
 import AdminLayout from './components/AdminLayout';
 import ScrollToTop from './components/ScrollToTop';
 import QuickBot from './components/QuickBot/QuickBot';
@@ -104,6 +105,13 @@ function App() {
             <ProtectedRoute>
               <AdminLayout admin={admin} onLogout={handleLogout}>
                 <AdminReservations token={adminToken} />
+              </AdminLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/reservation-settings" element={
+            <ProtectedRoute>
+              <AdminLayout admin={admin} onLogout={handleLogout}>
+                <AdminReservationSettings token={adminToken} />
               </AdminLayout>
             </ProtectedRoute>
           } />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarDays, UtensilsCrossed, Users, TrendingUp, Clock, ArrowUpRight, BarChart3, MapPin, Mail } from 'lucide-react';
+import { CalendarDays, UtensilsCrossed, Users, TrendingUp, Clock, ArrowUpRight, BarChart3, MapPin, Mail, Settings } from 'lucide-react';
 import api from '../../api';
 
 const statCards = [
@@ -114,6 +114,7 @@ export default function AdminDashboard({ token }) {
           { label: 'Manage Menu', path: '/admin/menu', icon: UtensilsCrossed, desc: 'Add, edit, delete items' },
           { label: 'Homepage Content', path: '/admin/homepage', icon: TrendingUp, desc: 'Featured dishes & testimonials' },
           { label: 'Reservations', path: '/admin/reservations', icon: CalendarDays, desc: 'View & manage bookings' },
+          { label: 'Reservation Settings', path: '/admin/reservation-settings', icon: Settings, desc: 'Pause or resume bookings' },
           { label: 'Catering', path: '/admin/catering', icon: Users, desc: 'Manage catering requests' },
           { label: 'Contact', path: '/admin/contact', icon: MapPin, desc: 'Manage contact inquiries' },
           { label: 'Email Settings', path: '/admin/notifications', icon: Mail, desc: 'Set notification recipients' },

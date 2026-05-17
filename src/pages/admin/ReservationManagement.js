@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, CalendarDays, Users, MapPin, Check, X, Clock, Loader2 } from 'lucide-react';
+import { Search, Filter, CalendarDays, Users, MapPin, Check, X, Clock, Loader2, PauseCircle, PlayCircle } from 'lucide-react';
 import api from '../../api';
 
 const statusConfig = {
@@ -21,6 +21,8 @@ export default function AdminReservationManagement({ token }) {
   const [search, setSearch] = useState('');
   const [selectedRes, setSelectedRes] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [reservationsPaused, setReservationsPaused] = useState(false);
+  const [togglingPause, setTogglingPause] = useState(false);
 
   const loadData = async ({ showLoader = false } = {}) => {
     if (showLoader) setLoading(true);
@@ -41,9 +43,21 @@ export default function AdminReservationManagement({ token }) {
 
   useEffect(() => {
     loadData({ showLoader: true });
+    api.getReservationSettings().then(data => setReservationsPaused(Boolean(data?.reservations_paused))).catch(console.error);
     const interval = setInterval(() => loadData(), 8000);
     return () => clearInterval(interval);
   }, [selectedRes?.id]);
+
+  const togglePause = async () => {
+    setTogglingPause(true);
+    try {
+      const result = await api.updateReservationSettings({ reservations_paused: !reservationsPaused });
+      setReservationsPaused(Boolean(result?.reservations_paused));
+    } catch (err) {
+      console.error(err);
+    }
+    setTogglingPause(false);
+  };
   const updateStatus = async (id, status) => { setUpdating(true); try { await api.updateReservation(id, { status }); setReservations(reservations.map(r => r.id === id ? { ...r, status } : r)); if (selectedRes?.id === id) setSelectedRes({ ...selectedRes, status }); } catch (err) { console.error(err); } setUpdating(false); };
   const deleteReservation = async (id) => { try { await api.deleteReservation(id); setReservations(reservations.filter(r => r.id !== id)); setSelectedRes(null); } catch (err) { console.error(err); } };
   const filtered = reservations.filter(r => { if (filterBranch && r.restaurant_id !== parseInt(filterBranch)) return false; if (filterStatus && r.status !== filterStatus) return false; if (filterDate && r.date !== filterDate) return false; if (search && !r.name?.toLowerCase().includes(search.toLowerCase()) && !r.email?.toLowerCase().includes(search.toLowerCase()) && !r.confirmation_code?.toLowerCase().includes(search.toLowerCase())) return false; return true; });
@@ -53,7 +67,28 @@ export default function AdminReservationManagement({ token }) {
 
   return (
     <div className="space-y-6">
-      <div><h1 className="text-2xl font-bold text-neutral-900 dark:text-white">Reservations</h1><p className="text-neutral-500 text-sm mt-1">Manage reservations across all branches</p></div>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div><h1 className="text-2xl font-bold text-neutral-900 dark:text-white">Reservations</h1><p className="text-neutral-500 text-sm mt-1">Manage reservations across all branches</p></div>
+        <button
+          onClick={togglePause}
+          disabled={togglingPause}
+          className={`flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm border disabled:opacity-60 disabled:cursor-not-allowed ${
+            reservationsPaused
+              ? 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/20'
+              : 'bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/20'
+          }`}
+        >
+          {togglingPause ? (
+            <Loader2 size={20} className="animate-spin" />
+          ) : reservationsPaused ? (
+            <PauseCircle size={20} />
+          ) : (
+            <PlayCircle size={20} />
+          )}
+          {reservationsPaused ? 'Reservations Paused' : 'Reservations Active'}
+          <span className={`inline-block w-2.5 h-2.5 rounded-full ${reservationsPaused ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`} />
+        </button>
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
