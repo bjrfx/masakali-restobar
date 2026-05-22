@@ -1,6 +1,6 @@
 {
   "short_name": "Masakali",
-  "name": "Masakali Indian Cuisine",
+  "name": "Masakali Restobar",
   "description": "Premium Indian dining experience - Reserve tables, explore menus, and order catering across all Masakali locations.",
   "icons": [
     {
@@ -26,7 +26,10 @@
   "theme_color": "#0d0d0d",
   "background_color": "#0d0d0d",
   "orientation": "portrait-primary",
-  "categories": ["food", "lifestyle"],
+  "categories": [
+    "food",
+    "lifestyle"
+  ],
   "screenshots": [],
   "prefer_related_applications": false
 }
