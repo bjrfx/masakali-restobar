@@ -5,14 +5,17 @@ import api from '../../api';
 
 export default function AdminReservationSettings({ token }) {
   const [reservationsPaused, setReservationsPaused] = useState(false);
+  const [timeRestrictionEnabled, setTimeRestrictionEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
+  const [togglingTimeRestriction, setTogglingTimeRestriction] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
     api.getReservationSettings()
       .then((data) => {
         setReservationsPaused(Boolean(data?.reservations_paused));
+        setTimeRestrictionEnabled(data?.time_restriction_enabled !== false && data?.time_restriction_enabled !== 0);
       })
       .catch((err) => {
         console.error(err);
@@ -27,6 +30,7 @@ export default function AdminReservationSettings({ token }) {
     try {
       const result = await api.updateReservationSettings({ reservations_paused: !reservationsPaused });
       setReservationsPaused(Boolean(result?.reservations_paused));
+      setTimeRestrictionEnabled(result?.time_restriction_enabled !== false && result?.time_restriction_enabled !== 0);
       setFeedback({
         type: 'success',
         message: result?.reservations_paused
@@ -38,6 +42,29 @@ export default function AdminReservationSettings({ token }) {
       setFeedback({ type: 'error', message: 'Failed to update. Please try again.' });
     }
     setToggling(false);
+  };
+
+  const toggleTimeRestriction = async () => {
+    const nextEnabled = !timeRestrictionEnabled;
+    setTogglingTimeRestriction(true);
+    setFeedback(null);
+    try {
+      const result = await api.updateReservationSettings({
+        time_restriction_enabled: nextEnabled,
+      });
+      setReservationsPaused(Boolean(result?.reservations_paused));
+      setTimeRestrictionEnabled(result?.time_restriction_enabled !== false && result?.time_restriction_enabled !== 0);
+      setFeedback({
+        type: 'success',
+        message: nextEnabled
+          ? 'Reservation time restriction has been enabled.'
+          : 'Reservation time restriction has been disabled.',
+      });
+    } catch (err) {
+      console.error(err);
+      setFeedback({ type: 'error', message: 'Failed to update reservation time restriction. Please try again.' });
+    }
+    setTogglingTimeRestriction(false);
   };
 
   if (loading) {
@@ -152,6 +179,53 @@ export default function AdminReservationSettings({ token }) {
               </ul>
             </div>
           </div>
+        </div>
+      </motion.div>
+
+      {/* Reservation Time Restriction Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm dark:shadow-none overflow-hidden"
+      >
+        <div className="p-6 border-b border-neutral-200 dark:border-neutral-800 flex items-center gap-3">
+          <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
+            <Settings size={20} className="text-amber-500 dark:text-amber-400" />
+          </div>
+          <div>
+            <h2 className="text-neutral-900 dark:text-white font-semibold">Reservation Time Restriction</h2>
+            <p className="text-neutral-500 text-xs mt-0.5">Control same-day advance-booking cutoff</p>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="flex items-center justify-between bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-5">
+            <div>
+              <p className="text-neutral-900 dark:text-white font-semibold text-lg">
+                {timeRestrictionEnabled ? 'Restriction Enabled' : 'Restriction Disabled'}
+              </p>
+              <p className="text-neutral-500 text-sm mt-1 max-w-2xl">
+                When enabled, reservations for today will only be available after the required minimum advance-booking time.
+                Past and restricted time slots will be automatically disabled. Reservations for future dates will remain unaffected.
+              </p>
+            </div>
+            <span className={`inline-block w-3.5 h-3.5 rounded-full flex-shrink-0 ${
+              timeRestrictionEnabled ? 'bg-green-500' : 'bg-neutral-400'
+            }`} />
+          </div>
+
+          <button
+            onClick={toggleTimeRestriction}
+            disabled={togglingTimeRestriction}
+            className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl text-base font-semibold transition-all border disabled:opacity-60 disabled:cursor-not-allowed ${
+              timeRestrictionEnabled
+                ? 'bg-neutral-500/10 border-neutral-500/30 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-500/20'
+                : 'bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400 hover:bg-green-500/20'
+            }`}
+          >
+            {togglingTimeRestriction ? <Loader2 size={20} className="animate-spin" /> : <Settings size={20} />}
+            {timeRestrictionEnabled ? 'Disable Restriction' : 'Enable Restriction'}
+          </button>
         </div>
       </motion.div>
 
