@@ -6,9 +6,11 @@ import api from '../../api';
 export default function AdminReservationSettings({ token }) {
   const [reservationsPaused, setReservationsPaused] = useState(false);
   const [timeRestrictionEnabled, setTimeRestrictionEnabled] = useState(true);
+  const [reservationTimeWarningEnabled, setReservationTimeWarningEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
   const [togglingTimeRestriction, setTogglingTimeRestriction] = useState(false);
+  const [togglingTimeWarning, setTogglingTimeWarning] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
@@ -16,6 +18,7 @@ export default function AdminReservationSettings({ token }) {
       .then((data) => {
         setReservationsPaused(Boolean(data?.reservations_paused));
         setTimeRestrictionEnabled(data?.time_restriction_enabled !== false && data?.time_restriction_enabled !== 0);
+        setReservationTimeWarningEnabled(data?.reservation_time_warning_enabled === true || data?.reservation_time_warning_enabled === 1);
       })
       .catch((err) => {
         console.error(err);
@@ -31,6 +34,7 @@ export default function AdminReservationSettings({ token }) {
       const result = await api.updateReservationSettings({ reservations_paused: !reservationsPaused });
       setReservationsPaused(Boolean(result?.reservations_paused));
       setTimeRestrictionEnabled(result?.time_restriction_enabled !== false && result?.time_restriction_enabled !== 0);
+      setReservationTimeWarningEnabled(result?.reservation_time_warning_enabled === true || result?.reservation_time_warning_enabled === 1);
       setFeedback({
         type: 'success',
         message: result?.reservations_paused
@@ -51,9 +55,11 @@ export default function AdminReservationSettings({ token }) {
     try {
       const result = await api.updateReservationSettings({
         time_restriction_enabled: nextEnabled,
+        reservation_time_warning_enabled: nextEnabled ? false : reservationTimeWarningEnabled,
       });
       setReservationsPaused(Boolean(result?.reservations_paused));
       setTimeRestrictionEnabled(result?.time_restriction_enabled !== false && result?.time_restriction_enabled !== 0);
+      setReservationTimeWarningEnabled(result?.reservation_time_warning_enabled === true || result?.reservation_time_warning_enabled === 1);
       setFeedback({
         type: 'success',
         message: nextEnabled
@@ -65,6 +71,31 @@ export default function AdminReservationSettings({ token }) {
       setFeedback({ type: 'error', message: 'Failed to update reservation time restriction. Please try again.' });
     }
     setTogglingTimeRestriction(false);
+  };
+
+  const toggleTimeWarning = async () => {
+    const nextEnabled = !reservationTimeWarningEnabled;
+    setTogglingTimeWarning(true);
+    setFeedback(null);
+    try {
+      const result = await api.updateReservationSettings({
+        time_restriction_enabled: nextEnabled ? false : timeRestrictionEnabled,
+        reservation_time_warning_enabled: nextEnabled,
+      });
+      setReservationsPaused(Boolean(result?.reservations_paused));
+      setTimeRestrictionEnabled(result?.time_restriction_enabled !== false && result?.time_restriction_enabled !== 0);
+      setReservationTimeWarningEnabled(result?.reservation_time_warning_enabled === true || result?.reservation_time_warning_enabled === 1);
+      setFeedback({
+        type: 'success',
+        message: nextEnabled
+          ? 'Reservation time warning has been enabled and time restriction has been disabled.'
+          : 'Reservation time warning has been disabled.',
+      });
+    } catch (err) {
+      console.error(err);
+      setFeedback({ type: 'error', message: 'Failed to update reservation time warning. Please try again.' });
+    }
+    setTogglingTimeWarning(false);
   };
 
   if (loading) {
@@ -225,6 +256,52 @@ export default function AdminReservationSettings({ token }) {
           >
             {togglingTimeRestriction ? <Loader2 size={20} className="animate-spin" /> : <Settings size={20} />}
             {timeRestrictionEnabled ? 'Disable Restriction' : 'Enable Restriction'}
+          </button>
+        </div>
+      </motion.div>
+
+      {/* Reservation Time Warning Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm dark:shadow-none overflow-hidden"
+      >
+        <div className="p-6 border-b border-neutral-200 dark:border-neutral-800 flex items-center gap-3">
+          <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
+            <AlertTriangle size={20} className="text-amber-500 dark:text-amber-400" />
+          </div>
+          <div>
+            <h2 className="text-neutral-900 dark:text-white font-semibold">Reservation Time Warning</h2>
+            <p className="text-neutral-500 text-xs mt-0.5">Warn and block near-term same-day submissions</p>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="flex items-center justify-between bg-neutral-50 dark:bg-neutral-800/50 rounded-xl p-5">
+            <div>
+              <p className="text-neutral-900 dark:text-white font-semibold text-lg">
+                {reservationTimeWarningEnabled ? 'Warning Enabled' : 'Warning Disabled'}
+              </p>
+              <p className="text-neutral-500 text-sm mt-1 max-w-2xl">
+                When enabled, same-day times less than 1 hour from the restaurant-local time remain selectable, but customers see a warning with contact details and cannot submit until they choose a valid time.
+              </p>
+            </div>
+            <span className={`inline-block w-3.5 h-3.5 rounded-full flex-shrink-0 ${
+              reservationTimeWarningEnabled ? 'bg-amber-500' : 'bg-neutral-400'
+            }`} />
+          </div>
+
+          <button
+            onClick={toggleTimeWarning}
+            disabled={togglingTimeWarning}
+            className={`w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl text-base font-semibold transition-all border disabled:opacity-60 disabled:cursor-not-allowed ${
+              reservationTimeWarningEnabled
+                ? 'bg-neutral-500/10 border-neutral-500/30 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-500/20'
+                : 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'
+            }`}
+          >
+            {togglingTimeWarning ? <Loader2 size={20} className="animate-spin" /> : <AlertTriangle size={20} />}
+            {reservationTimeWarningEnabled ? 'Disable Warning' : 'Enable Warning'}
           </button>
         </div>
       </motion.div>
