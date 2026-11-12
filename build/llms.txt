@@ -1,0 +1,22 @@
+# Masakali Indian Restobar
+
+> Masakali Indian Restobar is an Indian restaurant at 97 Clarence St. in Ottawa's Byward Market. The site covers menu, reservations, catering, and contact details.
+
+## Contact
+- Masakali Indian Restobar: 97 Clarence St., Ottawa, ON K1N 5P9, CA; Phone +1-613-789-6777
+- Email: infomasakaliottawa@gmail.com
+- Website: https://masakalirestobar.ca
+
+## Key pages
+- [Home](https://masakalirestobar.ca/): Overview
+- [Menu](https://masakalirestobar.ca/menu): Full food menu
+- [Reservations](https://masakalirestobar.ca/reservations): Book a table
+- [Catering](https://masakalirestobar.ca/catering-by-tray): Catering by the tray
+- [Locations](https://masakalirestobar.ca/locations): Address and directions
+- [Contact](https://masakalirestobar.ca/contact): Phone and email
+- [About](https://masakalirestobar.ca/about): Restaurant story
+
+## Notes
+- Cuisine: Indian
+- Reservations and catering are available through this website
+- Do not invent prices, ratings, or unverified claims
