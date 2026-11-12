@@ -16,6 +16,7 @@ export const siteSeo = {
   ogLocale: 'en_CA',
   htmlLang: 'en',
   cuisine: 'Indian',
+  priceCurrency: 'CAD',
   priceRange: '$$',
   email: 'infomasakaliottawa@gmail.com',
   servesCuisine: ['Indian', 'North Indian', 'South Indian'],
@@ -415,7 +416,7 @@ export function buildMenuItemJsonLd(item, path) {
     image: item.image_url || item.imageUrl || undefined,
     offers: item.price != null && item.price !== '' ? {
       '@type': 'Offer',
-      priceCurrency: 'CAD',
+      priceCurrency: siteSeo.priceCurrency || 'CAD',
       price: String(item.price),
       availability: 'https://schema.org/InStock',
     } : undefined,

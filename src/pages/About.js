@@ -101,7 +101,7 @@ function VideoPlayer({ src }) {
 export default function About() {
   return (
     <div className="min-h-screen pt-20 relative">
-      <Seo {...pageSeo('about')} />
+      <Seo {...pageSeo('about')} breadcrumbs={[{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }]} />
       {/* Indian ornamental overlays */}
       <div className="indian-mandala-tl" />
       <div className="indian-mandala-br" />
@@ -116,12 +116,10 @@ export default function About() {
             <span className="text-amber-500 dark:text-amber-400 text-sm font-semibold uppercase tracking-wider">About Us</span>
             <div className="section-divider !mx-0" />
             <h1 className="font-display text-5xl md:text-6xl font-bold text-neutral-900 dark:text-white mt-4 mb-6">
-              The Story of <span className="text-gold-gradient">Masakali</span>
+              Masakali Indian <span className="text-gold-gradient">Restobar</span>
             </h1>
             <p className="text-neutral-600 dark:text-neutral-400 text-lg leading-relaxed">
-              What began as a dream in 2021 has grown into one of Canada's most exciting 
-              Indian restaurant groups. Masakali is more than a restaurant — it's a celebration 
-              of culture, flavor, and community.
+              Masakali Indian Restobar brings modern Indian dining and a bar experience to Ottawa's Byward Market at 97 Clarence St. Enjoy signature Indian dishes with evening and weekend hours suited to the neighbourhood — plus reservations and catering. We are part of the Masakali Group.
             </p>
           </AnimatedSection>
         </div>
@@ -292,9 +290,20 @@ export default function About() {
             <h2 className="font-display text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
               Come Be a Part of Our Story
             </h2>
-            <Link to="/reservations" className="btn-gold text-lg">
-              Reserve Your Table <ArrowRight size={18} className="ml-2" />
-            </Link>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link to="/reservations" className="btn-gold text-lg">
+                Reserve Your Table <ArrowRight size={18} className="ml-2" />
+              </Link>
+              <Link to="/menu" className="btn-outline-gold text-lg">
+                View Menu <ArrowRight size={18} className="ml-2" />
+              </Link>
+              <Link to="/locations" className="btn-outline-gold text-lg">
+                Locations <ArrowRight size={18} className="ml-2" />
+              </Link>
+              <Link to="/contact" className="btn-outline-gold text-lg">
+                Contact <ArrowRight size={18} className="ml-2" />
+              </Link>
+            </div>
           </AnimatedSection>
         </div>
       </section>

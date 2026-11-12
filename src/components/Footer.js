@@ -11,7 +11,7 @@ const footerLinks = {
   ],
   services: [
     { name: 'Reserve a Table', path: '/reservations' },
-    { name: 'Catering Services', path: '/catering' },
+    { name: 'Catering Services', path: '/catering-by-tray' },
     { name: 'Contact Us', path: '/contact' },
     // { name: 'Admin Portal', path: '/admin/login' },
   ],
@@ -19,8 +19,8 @@ const footerLinks = {
 
 const brands = [
   { name: 'Masakali Ottawa', url: 'https://masakaliottawa.ca' },
-  { name: 'Masakali Restobar', url: 'https://masakalirestrobar.ca' },
-  { name: 'RangDe Ottawa', url: 'https://rangdeottawa.com' },
+  { name: 'Masakali Restobar', url: 'https://masakalirestobar.ca' },
+  { name: 'RangDe Ottawa', url: 'https://rangdeottawa.ca' },
   { name: 'Masakali Montreal', url: 'https://masakalimontreal.ca' },
   { name: 'Masakali California', url: 'https://masakalicalifornia.com' },
 ];
@@ -38,6 +38,7 @@ export default function Footer() {
                 src="/logo/Masakali-RestoBar.png"
                 alt="Masakali"
                 className="h-24 sm:h-28 w-auto object-contain"
+                width="180" height="160" decoding="async"
                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
               />
               <span className="hidden font-display text-2xl text-gold-gradient font-bold">Masakali</span>
@@ -124,7 +125,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Masakali Restaurant Group. All rights reserved.
           </p>
           <p className="text-neutral-400 dark:text-neutral-600 text-xs">
-            Est. 2021 · Ottawa · Montreal · California
+            97 Clarence St. · Byward Market, Ottawa
           </p>
         </div>
       </div>

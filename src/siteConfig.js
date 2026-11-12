@@ -14,3 +14,5 @@ export function filterCurrentSiteLocations(locations = []) {
     allowedSlugs.includes(String(location.slug || location.location_slug || '').toLowerCase())
   ));
 }
+
+export const filterSiteLocations = filterCurrentSiteLocations;
